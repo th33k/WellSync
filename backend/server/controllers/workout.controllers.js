@@ -1,5 +1,5 @@
 const Workout = require("../models/Workout");
-const AIService = require("../services/AIService");
+const AIService = require("../../services/AIServices");
 
 exports.createWorkout = async (req, res) => {
   try {
@@ -28,5 +28,58 @@ exports.getWorkouts = async (req, res) => {
     res.status(200).json(workouts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching workouts" });
+  }
+};
+
+// Add the missing controller methods that your routes are expecting
+exports.getWorkout = async (req, res) => {
+  try {
+    const workout = await Workout.findOne({
+      _id: req.params.id,
+      user: req.userData.userId,
+    });
+
+    if (!workout) {
+      return res.status(404).json({ message: "Workout not found" });
+    }
+
+    res.status(200).json(workout);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching workout" });
+  }
+};
+
+exports.updateWorkout = async (req, res) => {
+  try {
+    const workout = await Workout.findOneAndUpdate(
+      { _id: req.params.id, user: req.userData.userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!workout) {
+      return res.status(404).json({ message: "Workout not found" });
+    }
+
+    res.status(200).json(workout);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating workout" });
+  }
+};
+
+exports.deleteWorkout = async (req, res) => {
+  try {
+    const workout = await Workout.findOneAndDelete({
+      _id: req.params.id,
+      user: req.userData.userId,
+    });
+
+    if (!workout) {
+      return res.status(404).json({ message: "Workout not found" });
+    }
+
+    res.status(200).json({ message: "Workout deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting workout" });
   }
 };

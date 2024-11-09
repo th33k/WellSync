@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext";
 import { workoutApi, goalApi } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
@@ -22,6 +23,7 @@ import {
   Legend,
 } from "recharts";
 
+// StatCard component with PropTypes
 const StatCard = ({ title, value, icon: Icon, gradient }) => (
   <Card className={`bg-gradient-to-r ${gradient}`}>
     <CardContent className="p-6">
@@ -35,6 +37,13 @@ const StatCard = ({ title, value, icon: Icon, gradient }) => (
     </CardContent>
   </Card>
 );
+
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.elementType.isRequired,
+  gradient: PropTypes.string.isRequired,
+};
 
 const SkeletonCard = () => (
   <Card>
@@ -62,48 +71,7 @@ const Dashboard = () => {
     streak: 0,
   });
 
-  // Fetch dashboard data with error handling
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchDashboardData = async () => {
-      try {
-        setError(null);
-        const [workoutsRes, goalsRes] = await Promise.all([
-          workoutApi.getWorkouts(),
-          goalApi.getGoals(),
-        ]);
-
-        setWorkouts(workoutsRes.data);
-        setGoals(goalsRes.data);
-
-        // Calculate stats
-        const completedWorkouts = workoutsRes.data.filter(
-          (w) => w.completed
-        ).length;
-        const activeGoals = goalsRes.data.filter((g) => !g.completed).length;
-        const streak = calculateStreak(workoutsRes.data);
-
-        setStats({
-          completedWorkouts,
-          activeGoals,
-          streak,
-        });
-      } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to load dashboard data"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-
-    return () => controller.abort();
-  }, []);
-
-  // Memoized streak calculation
+  // Calculate streak function
   const calculateStreak = useMemo(
     () => (workouts) => {
       const sortedWorkouts = workouts
@@ -131,6 +99,42 @@ const Dashboard = () => {
     },
     []
   );
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setError(null);
+        const [workoutsRes, goalsRes] = await Promise.all([
+          workoutApi.getWorkouts(),
+          goalApi.getGoals(),
+        ]);
+
+        setWorkouts(workoutsRes.data);
+        setGoals(goalsRes.data);
+
+        const completedWorkouts = workoutsRes.data.filter(
+          (w) => w.completed
+        ).length;
+        const activeGoals = goalsRes.data.filter((g) => !g.completed).length;
+        const streak = calculateStreak(workoutsRes.data);
+
+        setStats({
+          completedWorkouts,
+          activeGoals,
+          streak,
+        });
+      } catch (err) {
+        setError(
+          err.response?.data?.message || "Failed to load dashboard data"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [calculateStreak]);
 
   // Memoized chart data
   const chartData = useMemo(() => {
@@ -260,16 +264,15 @@ const Dashboard = () => {
                       className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-medium">{goal.name}</span>
-                        <span className="text-sm text-blue-500">
-                          {goal.progress}% Complete
+                        <span className="font-medium">{goal.title}</span>
+                        <span className="text-sm text-gray-500">
+                          {goal.deadline
+                            ? new Date(goal.deadline).toLocaleDateString()
+                            : "No deadline"}
                         </span>
                       </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
-                        <div
-                          className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                          style={{ width: `${goal.progress}%` }}
-                        />
+                      <div className="text-sm text-gray-500 mt-1">
+                        {goal.description}
                       </div>
                     </div>
                   ))}
@@ -284,45 +287,29 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Progress Charts */}
+      {/* Workout Performance Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Workout Progress</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Workout Performance
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {loading ? (
-            <Skeleton className="h-[300px] w-full" />
+            <Skeleton className="h-64 w-full" />
           ) : (
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" name="Duration" />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    name="Intensity"
-                    domain={[0, 3]}
-                    ticks={[1, 2, 3]}
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="duration"
-                    fill="#3b82f6"
-                    name="Duration (mins)"
-                  />
-                  <Bar
-                    yAxisId="right"
-                    dataKey="intensity"
-                    fill="#8b5cf6"
-                    name="Intensity Level"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="duration" fill="#8884d8" />
+                <Bar dataKey="intensity" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
           )}
         </CardContent>
       </Card>
