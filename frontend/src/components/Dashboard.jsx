@@ -24,6 +24,7 @@ const Dashboard = () => {
           <p>{recommendation.workout}</p>
           <h2>Meditation</h2>
           <p>{recommendation.meditation}</p>
+          
         </div>
       )}
     </div>
