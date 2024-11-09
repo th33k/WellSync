@@ -2,9 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext";
 import { workoutApi, goalApi } from "../services/api";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Alert, AlertDescription } from "./ui/alert";
-import { Skeleton } from "./ui/skeleton";
 import {
   Target,
   Calendar,
@@ -25,8 +22,8 @@ import {
 
 // StatCard component with PropTypes
 const StatCard = ({ title, value, icon: Icon, gradient }) => (
-  <Card className={`bg-gradient-to-r ${gradient}`}>
-    <CardContent className="p-6">
+  <div className={`rounded-lg shadow-md bg-gradient-to-r ${gradient}`}>
+    <div className="p-6">
       <div className="flex items-center justify-between text-white">
         <div>
           <p className="text-sm opacity-90">{title}</p>
@@ -34,8 +31,8 @@ const StatCard = ({ title, value, icon: Icon, gradient }) => (
         </div>
         <Icon className="h-8 w-8" />
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 );
 
 StatCard.propTypes = {
@@ -46,17 +43,17 @@ StatCard.propTypes = {
 };
 
 const SkeletonCard = () => (
-  <Card>
-    <CardContent className="p-6">
+  <div className="rounded-lg shadow-md bg-white">
+    <div className="p-6">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-8 w-16" />
+          <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+          <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
         </div>
-        <Skeleton className="h-8 w-8 rounded" />
+        <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 );
 
 const Dashboard = () => {
@@ -151,10 +148,10 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <Alert variant="destructive" className="m-6">
+      <div className="m-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
         <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+        <p>{error}</p>
+      </div>
     );
   }
 
@@ -194,18 +191,21 @@ const Dashboard = () => {
 
       {/* Upcoming Workouts & Goals */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-6 border-b">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Upcoming Workouts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
+          </div>
+          <div className="p-6">
             {loading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <div
+                    key={i}
+                    className="h-16 w-full bg-gray-200 rounded animate-pulse"
+                  />
                 ))}
               </div>
             ) : (
@@ -236,21 +236,24 @@ const Dashboard = () => {
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-6 border-b">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
               <Target className="h-5 w-5" />
               Active Goals
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
+          </div>
+          <div className="p-6">
             {loading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <div
+                    key={i}
+                    className="h-16 w-full bg-gray-200 rounded animate-pulse"
+                  />
                 ))}
               </div>
             ) : (
@@ -283,21 +286,21 @@ const Dashboard = () => {
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Workout Performance Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="p-6 border-b">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
             <Activity className="h-5 w-5" />
             Workout Performance
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
+          </h2>
+        </div>
+        <div className="p-6">
           {loading ? (
-            <Skeleton className="h-64 w-full" />
+            <div className="h-64 w-full bg-gray-200 rounded animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
@@ -311,8 +314,8 @@ const Dashboard = () => {
               </BarChart>
             </ResponsiveContainer>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
