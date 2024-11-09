@@ -57,7 +57,7 @@ const SkeletonCard = () => (
 );
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user } = useAuth(); // Fixed: Correctly destructure the user from useAuth
   const [workouts, setWorkouts] = useState([]);
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,8 +130,11 @@ const Dashboard = () => {
       }
     };
 
-    fetchDashboardData();
-  }, [calculateStreak]);
+    if (user) {
+      // Only fetch data if user is authenticated
+      fetchDashboardData();
+    }
+  }, [calculateStreak, user]); // Added user to dependencies
 
   // Memoized chart data
   const chartData = useMemo(() => {
@@ -145,6 +148,15 @@ const Dashboard = () => {
           w.intensity === "high" ? 3 : w.intensity === "medium" ? 2 : 1,
       }));
   }, [workouts]);
+
+  if (!user) {
+    return (
+      <div className="m-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2 text-yellow-700">
+        <AlertCircle className="h-4 w-4" />
+        <p>Please log in to view your dashboard</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
