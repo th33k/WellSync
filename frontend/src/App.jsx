@@ -4,15 +4,17 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route
           path="/dashboard"
           element={
