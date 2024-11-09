@@ -29,7 +29,6 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
-//app.use("/api/auth", authRoutes);
 app.use("/api/workouts", workoutRoutes);
 //app.use("/api/meditations", meditationRoutes);
 app.use("/api/goals", goalRoutes);
