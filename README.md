@@ -27,4 +27,3 @@ WellSync is a virtual fitness and meditation platform designed to create customi
 - **Backend**: [Gemini API](https://example.com), [Node.js](https://nodejs.org/)
 - **Database**: [MongoDB](https://www.mongodb.com/)
 - **Frontend**: [React.js](https://reactjs.org/), [Tailwind CSS](https://tailwindcss.com/)
-- **Deployment**: [Render](https://render.com/) or similar for backend and frontend hosting.
