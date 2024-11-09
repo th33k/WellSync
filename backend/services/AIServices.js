@@ -1,5 +1,5 @@
 // services/AIService.js
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 class AIService {
   constructor() {
@@ -219,4 +219,5 @@ class WorkoutUtils {
   }
 }
 
-export { AIService, WorkoutUtils };
+module.exports = { AIService, WorkoutUtils };
+
