@@ -10,6 +10,7 @@ const workoutRoutes = require("./routes/workout.routes");
 const goalRoutes = require("./routes/goal.routes");
 //const nutritionRoutes = require("./routes/nutrition.routes");
 //const challengeRoutes = require("./routes/challenge.routes");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -34,6 +35,8 @@ app.use("/api/workouts", workoutRoutes);
 app.use("/api/goals", goalRoutes);
 //app.use("/api/nutrition", nutritionRoutes);
 //app.use("/api/challenges", challengeRoutes);
+app.use("/api/auth", authRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -8,37 +8,36 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const verifyToken = async (token) => {
-    try {
-      const response = await authApi.verify(token);
-      setUser(response.data.user);
-    } catch (error) {
-      localStorage.removeItem("token");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      verifyToken(token);
-    } else {
-      setLoading(false);
+      setUser({ token });
     }
+    setLoading(false);
   }, []);
+
+  const register = async (userData) => {
+    try {
+      const response = await authApi.register(userData);
+      const { token, userId } = response.data;
+
+      localStorage.setItem("token", token);
+      setUser({ token, userId });
+
+      return response.data;
+    } catch (error) {
+      console.error("Registration error in AuthContext:", error);
+      throw error;
+    }
+  };
 
   const login = async (credentials) => {
     const response = await authApi.login(credentials);
-    localStorage.setItem("token", response.data.token);
-    setUser(response.data.user);
-    return response.data;
-  };
+    const { token, userId } = response.data;
 
-  const register = async (userData) => {
-    const response = await authApi.register(userData);
-    localStorage.setItem("token", response.data.token);
-    setUser(response.data.user);
+    localStorage.setItem("token", token);
+    setUser({ token, userId });
+
     return response.data;
   };
 
